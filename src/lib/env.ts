@@ -1,5 +1,7 @@
 const AMAZON_TAG_PATTERN = /^[a-z0-9-]{3,64}$/i;
 
+const DEV_FALLBACK_AMAZON_TAG = "demo-tag-20";
+
 type ValidatedEnv = {
   NEXT_PUBLIC_AMAZON_TAG: string;
   CHECKLIST_KEY?: string;
@@ -22,7 +24,9 @@ function normalizeSiteUrl(url: string): string {
 
 function validateEnvInternal(source: NodeJS.ProcessEnv): ValidatedEnv {
   const issues: string[] = [];
-  const amazonTag = source.NEXT_PUBLIC_AMAZON_TAG?.trim();
+  const isProduction = source.NODE_ENV === "production";
+  const rawAmazonTag = source.NEXT_PUBLIC_AMAZON_TAG?.trim();
+  const amazonTag = rawAmazonTag || (!isProduction ? DEV_FALLBACK_AMAZON_TAG : undefined);
 
   if (!amazonTag) {
     issues.push("NEXT_PUBLIC_AMAZON_TAG is required and cannot be empty.");
@@ -42,6 +46,12 @@ function validateEnvInternal(source: NodeJS.ProcessEnv): ValidatedEnv {
   if (issues.length > 0) {
     const message = `[env] Invalid environment configuration:\n- ${issues.join("\n- ")}`;
     throw new Error(message);
+  }
+
+  if (!rawAmazonTag && !isProduction) {
+    console.warn(
+      `[env] NEXT_PUBLIC_AMAZON_TAG is missing. Using development fallback (${DEV_FALLBACK_AMAZON_TAG}).`,
+    );
   }
 
   return {
