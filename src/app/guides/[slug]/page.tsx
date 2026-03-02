@@ -6,9 +6,11 @@ import remarkGfm from "remark-gfm";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { ProductCard } from "@/components/ProductCard";
 import { QuickPicksBox } from "@/components/QuickPicksBox";
+import { VerdictHero } from "@/components/VerdictHero";
 import { mdxComponents } from "@/components/mdx-components";
 import { getDocBySlug, getDocsByType } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
+import { Product } from "@/types/content";
 
 const defaultOgImage = "/images/og-default.svg";
 
@@ -48,8 +50,49 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-function getPick(products: { bestFor: string; name: string }[], needle: string) {
-  return products.find((product) => product.bestFor.toLowerCase().includes(needle.toLowerCase()));
+function getPick(products: Product[], needle: string) {
+  const lowerNeedle = needle.toLowerCase();
+  return products.find((product) => product.bestFor.toLowerCase().includes(lowerNeedle) || product.name.toLowerCase().includes(lowerNeedle));
+}
+
+function getPriceRangeBounds(priceRange: string) {
+  const numbers = priceRange.match(/\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+  if (!numbers.length) return null;
+
+  return {
+    low: Math.min(...numbers),
+    high: Math.max(...numbers),
+  };
+}
+
+function selectGuidePicks(products: Product[]) {
+  const bestOverall = getPick(products, "overall") ?? products[0];
+  const nonOverall = bestOverall ? products.filter((product) => product !== bestOverall) : [...products];
+
+  const sortedByLow = [...nonOverall].sort((a, b) => {
+    const aLow = getPriceRangeBounds(a.priceRange)?.low ?? Number.POSITIVE_INFINITY;
+    const bLow = getPriceRangeBounds(b.priceRange)?.low ?? Number.POSITIVE_INFINITY;
+    return aLow - bLow;
+  });
+  const sortedByHigh = [...nonOverall].sort((a, b) => {
+    const aHigh = getPriceRangeBounds(a.priceRange)?.high ?? Number.NEGATIVE_INFINITY;
+    const bHigh = getPriceRangeBounds(b.priceRange)?.high ?? Number.NEGATIVE_INFINITY;
+    return bHigh - aHigh;
+  });
+
+  const bestBudget = getPick(nonOverall, "budget") ?? sortedByLow[0] ?? nonOverall[0];
+  const premiumPool = nonOverall.filter((product) => product !== bestBudget);
+  const bestPremium = getPick(premiumPool, "premium") ?? sortedByHigh.find((product) => product !== bestBudget) ?? nonOverall[1];
+
+  const compactPool = nonOverall.filter((product) => product !== bestBudget && product !== bestPremium);
+  const bestCompact = getPick(compactPool, "compact") ?? getPick(compactPool, "small") ?? nonOverall[2] ?? compactPool[0];
+
+  return {
+    bestOverall,
+    bestBudget,
+    bestPremium,
+    bestCompact,
+  };
 }
 
 export default async function GuidePage({ params }: Props) {
@@ -61,10 +104,7 @@ export default async function GuidePage({ params }: Props) {
   }
 
   const products = guide.frontmatter.products;
-  const bestOverall = getPick(products, "overall") ?? products[0];
-  const bestBudget = getPick(products, "budget") ?? products[1] ?? products[0];
-  const bestPremium = getPick(products, "premium") ?? products[2] ?? products[0];
-  const bestCompact = getPick(products, "compact") ?? products[3] ?? products[0];
+  const { bestOverall, bestBudget, bestPremium, bestCompact } = selectGuidePicks(products);
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -99,32 +139,32 @@ export default async function GuidePage({ params }: Props) {
         <span>Last updated: {guide.frontmatter.lastUpdated}</span>
       </div>
 
-      <section className="mt-8 rounded-xl border border-neutral-200 bg-neutral-50 p-5">
-        <h2 className="text-lg font-semibold tracking-tight text-slate-900">Quick picks summary</h2>
-        <ul className="mt-3 space-y-1 text-sm text-neutral-700">
-          <li>Best overall: {bestOverall?.name}</li>
-          <li>Best budget: {bestBudget?.name}</li>
-          <li>Best premium: {bestPremium?.name}</li>
-          <li>Best compact: {bestCompact?.name}</li>
-        </ul>
-      </section>
+      <VerdictHero
+        topPick={bestOverall}
+        subtag={guide.frontmatter.slug}
+        alternates={[
+          { label: "Best budget", product: bestBudget },
+          { label: "Best premium", product: bestPremium },
+          { label: "Most compact", product: bestCompact },
+        ]}
+      />
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[250px_1fr]">
         <QuickPicksBox products={products} />
         <div className="space-y-10">
-          <section>
+          <section id="comparison" className="scroll-mt-24">
             <h2 className="mb-4 border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Comparison table</h2>
-            <ComparisonTable products={products} />
+            <ComparisonTable products={products} subtag={guide.frontmatter.slug} />
           </section>
 
-          <section className="space-y-4">
+          <section id="top-picks" className="scroll-mt-24 space-y-4">
             <h2 className="border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Top picks</h2>
             {products.map((product) => (
               <ProductCard key={product.name} product={product} subtag={guide.frontmatter.slug} />
             ))}
           </section>
 
-          <section className="border-t border-neutral-200 pt-8">
+          <section id="how-to-choose" className="scroll-mt-24 border-t border-neutral-200 pt-8">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">How to choose</h2>
             <div className="prose mt-3 max-w-none">
               <MDXRemote source={guide.body} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
