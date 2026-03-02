@@ -9,19 +9,19 @@ export function QuickPicksBox({ products }: { products: Product[] }) {
   const picks = products.slice(0, 4);
 
   return (
-    <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-24">
+    <aside className="rounded-xl border border-neutral-200 bg-white p-4 lg:sticky lg:top-24">
       <button
         className="flex w-full items-center justify-between text-left lg:pointer-events-none"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Quick Picks</h2>
-        <span className="text-xs text-slate-500 lg:hidden">{open ? "Hide" : "Show"}</span>
+        <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-700">Quick Picks</h2>
+        <span className="text-xs text-neutral-500 lg:hidden">{open ? "Hide" : "Show"}</span>
       </button>
-      <ul className={`mt-3 space-y-2 ${open ? "block" : "hidden lg:block"}`}>
+      <ul className={`mt-3 space-y-2.5 border-l border-neutral-200 pl-3 ${open ? "block" : "hidden lg:block"}`}>
         {picks.map((pick) => (
-          <li key={pick.name} className="rounded-lg bg-slate-50 p-2 text-sm text-slate-700">
-            <p className="font-medium text-slate-900">{pick.bestFor}</p>
-            <p>{pick.name}</p>
+          <li key={pick.name} className="text-sm text-neutral-700">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">{pick.bestFor}</p>
+            <p className="mt-0.5 font-medium text-slate-900">{pick.name}</p>
           </li>
         ))}
       </ul>

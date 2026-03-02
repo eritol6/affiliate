@@ -90,18 +90,18 @@ export default async function GuidePage({ params }: Props) {
       <Script id="guide-article-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <Script id="guide-itemlist-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
 
-      <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Buying guide</p>
-      <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900">{guide.frontmatter.title}</h1>
-      <p className="mt-3 text-lg text-slate-600">{guide.frontmatter.description}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Buying guide</p>
+      <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">{guide.frontmatter.title}</h1>
+      <p className="mt-3 max-w-3xl text-base leading-7 text-neutral-700 sm:text-lg">{guide.frontmatter.description}</p>
 
-      <div className="mt-5 flex flex-wrap gap-3 text-xs text-slate-500">
+      <div className="mt-5 flex flex-wrap gap-3 text-xs text-neutral-500">
         <span>Published: {guide.frontmatter.date}</span>
         <span>Last updated: {guide.frontmatter.lastUpdated}</span>
       </div>
 
-      <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-4">
-        <h2 className="text-lg font-semibold text-slate-900">Quick picks summary</h2>
-        <ul className="mt-3 space-y-1 text-sm text-slate-700">
+      <section className="mt-8 rounded-xl border border-neutral-200 bg-neutral-50 p-5">
+        <h2 className="text-lg font-semibold tracking-tight text-slate-900">Quick picks summary</h2>
+        <ul className="mt-3 space-y-1 text-sm text-neutral-700">
           <li>Best overall: {bestOverall?.name}</li>
           <li>Best budget: {bestBudget?.name}</li>
           <li>Best premium: {bestPremium?.name}</li>
@@ -109,51 +109,51 @@ export default async function GuidePage({ params }: Props) {
         </ul>
       </section>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[260px_1fr]">
+      <div className="mt-10 grid gap-8 lg:grid-cols-[250px_1fr]">
         <QuickPicksBox products={products} />
-        <div className="space-y-8">
+        <div className="space-y-10">
           <section>
-            <h2 className="mb-3 text-2xl font-semibold">Comparison table</h2>
+            <h2 className="mb-4 border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Comparison table</h2>
             <ComparisonTable products={products} />
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">Top picks</h2>
+            <h2 className="border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Top picks</h2>
             {products.map((product) => (
               <ProductCard key={product.name} product={product} subtag={guide.frontmatter.slug} />
             ))}
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-5">
-            <h2 className="text-2xl font-semibold">How to choose</h2>
-            <div className="prose max-w-none mt-2">
+          <section className="border-t border-neutral-200 pt-8">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">How to choose</h2>
+            <div className="prose mt-3 max-w-none">
               <MDXRemote source={guide.body} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-5">
-            <h2 className="text-2xl font-semibold">FAQ</h2>
-            <details className="mt-3 rounded-lg border border-slate-200 p-3">
+          <section className="border-t border-neutral-200 pt-8">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">FAQ</h2>
+            <details className="mt-4 rounded-xl border border-neutral-200 p-4">
               <summary className="cursor-pointer font-medium">What is the best option for apartments?</summary>
-              <p className="mt-2 text-sm text-slate-600">Adjustable systems and foldable equipment usually win on footprint and storage convenience.</p>
+              <p className="mt-2 text-sm text-neutral-700">Adjustable systems and foldable equipment usually win on footprint and storage convenience.</p>
             </details>
-            <details className="mt-2 rounded-lg border border-slate-200 p-3">
+            <details className="mt-2 rounded-xl border border-neutral-200 p-4">
               <summary className="cursor-pointer font-medium">How often should you update this guide?</summary>
-              <p className="mt-2 text-sm text-slate-600">At minimum quarterly, or when major models are discontinued or repriced.</p>
+              <p className="mt-2 text-sm text-neutral-700">At minimum quarterly, or when major models are discontinued or repriced.</p>
             </details>
           </section>
 
-          <section className="rounded-2xl border border-slate-900 bg-slate-900 p-5 text-white">
-            <h2 className="text-2xl font-semibold">Final recommendation</h2>
-            <p className="mt-2 text-slate-100">
+          <section className="rounded-xl border border-neutral-200 bg-neutral-50 p-5">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Final recommendation</h2>
+            <p className="mt-2 text-neutral-700">
               If you want the safest all-around choice today, start with <strong>{bestOverall?.name}</strong>. It balances quality, space efficiency,
               and long-term value.
             </p>
           </section>
 
-          <section>
-            <h3 className="text-lg font-semibold">Sources</h3>
-            <ul className="mt-2 list-disc pl-5 text-sm text-slate-600">
+          <section className="border-t border-neutral-200 pt-8">
+            <h3 className="text-lg font-semibold tracking-tight text-slate-900">Sources</h3>
+            <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700">
               {(guide.frontmatter.sources ?? ["Brand specification pages", "Retail listing data", "User feedback summaries"]).map((source) => (
                 <li key={source}>{source}</li>
               ))}

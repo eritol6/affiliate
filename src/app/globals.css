@@ -1,18 +1,83 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
 
-* {
-  box-sizing: border-box;
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  ::selection {
+    background: #dbeafe;
+    color: var(--text);
+  }
+
+  a {
+    text-underline-offset: 3px;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
+  }
+
+  :is(a, button, input, textarea, select):focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.45);
+    outline-offset: 2px;
+  }
 }
 
-html,
-body {
-  margin: 0;
-  min-height: 100%;
+.prose {
+  max-width: 72ch;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--subtext);
 }
 
-body {
-  background: linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%);
-  color: #0f172a;
+.prose :where(h2, h3, h4) {
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.prose :where(h2) {
+  margin-top: 1.6em;
+  margin-bottom: 0.55em;
+  font-size: clamp(1.45rem, 2vw, 1.75rem);
+  line-height: 1.25;
+}
+
+.prose :where(h3) {
+  margin-top: 1.35em;
+  margin-bottom: 0.45em;
+  font-size: clamp(1.2rem, 1.5vw, 1.35rem);
+  line-height: 1.35;
+}
+
+.prose :where(p, ul, ol) {
+  margin-top: 0.9em;
+  margin-bottom: 0.9em;
+}
+
+.prose :where(a) {
+  color: var(--accent);
+  text-decoration-color: #93c5fd;
+}
+
+.prose :where(a:hover) {
+  color: #1e40af;
+  text-decoration-color: #1d4ed8;
 }
 
 .prose table {
