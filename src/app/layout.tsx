@@ -38,6 +38,11 @@ export const metadata: Metadata = {
     description: "Independent buying guides and reviews.",
     images: [defaultOgImage],
   },
+  verification: {
+    other: {
+      "fo-verify": "14e4ec83-dac6-4242-99a5-6a1988f8e1db",
+    },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
