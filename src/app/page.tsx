@@ -41,7 +41,7 @@ export default function HomePage() {
         <div className="mt-7 flex flex-wrap gap-3">
           <Link
             href="/guides"
-            className="inline-flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2"
+            className="inline-flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold !text-white no-underline transition hover:bg-blue-700 hover:!text-white visited:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2"
           >
             Browse buying guides
           </Link>
@@ -147,7 +147,7 @@ export default function HomePage() {
           />
           <button
             type="submit"
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold !text-white no-underline transition hover:bg-blue-700 hover:!text-white visited:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2"
           >
             Notify me
           </button>

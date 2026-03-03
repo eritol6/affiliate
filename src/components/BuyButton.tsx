@@ -20,7 +20,7 @@ export function BuyButton({ merchant, url, label, subtag }: BuyButtonProps) {
       href={url}
       target="_blank"
       rel="nofollow sponsored noopener"
-      className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-px"
+      className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-center text-sm font-semibold leading-tight !text-white no-underline transition hover:bg-blue-700 hover:!text-white visited:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-px"
     >
       {label ?? "Check price on Amazon"}
     </a>

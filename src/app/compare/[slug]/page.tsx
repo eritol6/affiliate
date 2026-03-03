@@ -51,6 +51,11 @@ export default async function ComparisonPage({ params }: Props) {
   const doc = getDocBySlug("compare", slug);
 
   if (!doc) notFound();
+  const products = doc.frontmatter.products;
+  const marker = "<!--COMPARISON_TABLE-->";
+  const hasMarker = doc.body.includes(marker);
+  const [beforeTableContent, afterTableContent] = hasMarker ? doc.body.split(marker) : ["", doc.body];
+  const topPick = [...products].sort((a, b) => (b.score ?? b.rating ?? 0) - (a.score ?? a.rating ?? 0))[0];
 
   return (
     <article className="space-y-6">
@@ -58,14 +63,20 @@ export default async function ComparisonPage({ params }: Props) {
       <h1 className="text-4xl font-bold tracking-tight">{doc.frontmatter.title}</h1>
       <p className="text-lg text-slate-600">{doc.frontmatter.description}</p>
 
-      <ComparisonTable products={doc.frontmatter.products} />
+      {hasMarker ? (
+        <div className="prose max-w-none rounded-2xl border border-slate-200 bg-white p-5">
+          <MDXRemote source={beforeTableContent} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
+        </div>
+      ) : null}
+
+      <ComparisonTable products={products} subtag={doc.frontmatter.slug} topPickName={topPick?.name} />
 
       <div className="prose max-w-none rounded-2xl border border-slate-200 bg-white p-5">
-        <MDXRemote source={doc.body} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
+        <MDXRemote source={afterTableContent} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
       </div>
 
       <section className="space-y-4">
-        {doc.frontmatter.products.map((product) => (
+        {products.map((product) => (
           <ProductCard key={product.name} product={product} subtag={doc.frontmatter.slug} />
         ))}
       </section>

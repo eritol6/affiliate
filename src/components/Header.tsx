@@ -10,6 +10,7 @@ export function Header({ searchIndex }: { searchIndex: SearchEntry[] }) {
   const pathname = usePathname();
   const links = [
     { href: "/guides", label: "Guides" },
+    { href: "/compare", label: "Compare" },
     { href: "/categories", label: "Categories" },
     { href: "/reviews", label: "Reviews" },
     { href: "/methodology", label: "Methodology" },

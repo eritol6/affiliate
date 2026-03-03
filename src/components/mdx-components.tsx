@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import { BuyButton } from "@/components/BuyButton";
+import { ComparisonWinnerCard } from "@/components/ComparisonWinnerCard";
+
 export const mdxComponents = {
   h2: (props: React.ComponentProps<"h2">) => <h2 className="mt-8 text-2xl font-semibold text-slate-900" {...props} />,
   h3: (props: React.ComponentProps<"h3">) => <h3 className="mt-6 text-xl font-semibold text-slate-900" {...props} />,
@@ -13,4 +16,6 @@ export const mdxComponents = {
     }
     return <a className="text-slate-900 underline" target="_blank" rel="noopener noreferrer" {...props} />;
   },
+  BuyButton,
+  ComparisonWinnerCard,
 };
