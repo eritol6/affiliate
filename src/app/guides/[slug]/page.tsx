@@ -148,6 +148,36 @@ export default async function GuidePage({ params }: Props) {
     bestFor: product.bestFor,
     anchorId: `product-${slugifyProductName(product.name)}`,
   }));
+  const quickDecisionItems = isCompactMachinesGuide
+    ? [
+        {
+          prompt: "Want the most versatile cable machine?",
+          productName: "Powerline PFT100",
+          anchorId: products.find((product) => {
+            const normalized = slugifyProductName(product.name);
+            return normalized.includes("powerline") || normalized.includes("pft100");
+          })?.name,
+        },
+        {
+          prompt: "Want serious value per dollar?",
+          productName: "Mikolo K6",
+          anchorId: products.find((product) => slugifyProductName(product.name).includes("mikolo-k6"))?.name,
+        },
+        {
+          prompt: "Want plate-free smart training?",
+          productName: "Speediance",
+          anchorId: products.find((product) => slugifyProductName(product.name).includes("speediance"))?.name,
+        },
+        {
+          prompt: "Want beginner simplicity?",
+          productName: "Bowflex PR1000",
+          anchorId: products.find((product) => slugifyProductName(product.name).includes("bowflex-pr1000"))?.name,
+        },
+      ].map((item) => ({
+        ...item,
+        href: item.anchorId ? `#product-${slugifyProductName(item.anchorId)}` : undefined,
+      }))
+    : [];
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -193,17 +223,48 @@ export default async function GuidePage({ params }: Props) {
         alternates={heroAlternates}
       />
 
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+        <h2 className="text-xl font-semibold tracking-tight text-slate-900">Why Trust This Guide</h2>
+        <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-slate-700">
+          <li>Structured scoring system (10-point internal score)</li>
+          <li>Focused specifically on small-space equipment</li>
+          <li>No paid placements</li>
+          <li>Affiliate-supported (at no extra cost to you)</li>
+          <li>Updated regularly to reflect availability and value</li>
+        </ul>
+      </section>
+
       <div className="mt-10 grid gap-8 lg:grid-cols-[250px_1fr]">
         <QuickPicksBox picks={quickPickItems} />
         <div className="space-y-10">
           {isCompactMachinesGuide ? (
-            <section className="rounded-xl border border-neutral-200 bg-neutral-50 p-5">
-              <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Space Planning Quick Guide</h2>
-              <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-neutral-700">
-                <li>Measure usable width, not just wall-to-wall.</li>
-                <li>Account for cable travel range.</li>
-                <li>Leave 6-12 inches clearance behind machine.</li>
-                <li>Verify ceiling height before purchase.</li>
+            <section className="rounded-2xl border border-slate-200 bg-white p-5">
+              <h2 className="text-xl font-semibold tracking-tight text-slate-950">Will It Fit in Your Space?</h2>
+              <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-slate-700">
+                <li>Measure usable width, not wall-to-wall.</li>
+                <li>Leave 6-12 inches behind cable machines for range of motion.</li>
+                <li>Verify ceiling height (many require 84&quot;+).</li>
+                <li>Check door clearance for delivery.</li>
+              </ul>
+            </section>
+          ) : null}
+          {isCompactMachinesGuide ? (
+            <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Quick Decision Guide</h2>
+              <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                {quickDecisionItems.map((item) => (
+                  <li key={item.productName}>
+                    <span>{item.prompt} </span>
+                    <span aria-hidden="true">-&gt; </span>
+                    {item.href ? (
+                      <a className="font-semibold text-slate-900 underline-offset-2 hover:text-blue-700 hover:underline" href={item.href}>
+                        {item.productName}
+                      </a>
+                    ) : (
+                      <span className="font-semibold text-slate-900">{item.productName}</span>
+                    )}
+                  </li>
+                ))}
               </ul>
             </section>
           ) : null}
