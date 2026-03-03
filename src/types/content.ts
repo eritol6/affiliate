@@ -5,6 +5,9 @@ export type Product = {
   merchant: Merchant;
   url: string;
   priceRange: string;
+  weightRange?: string;
+  incrementSize?: string;
+  adjustmentSpeed?: string;
   score?: number;
   rating?: number;
   bestFor: string;
@@ -27,7 +30,7 @@ export type BaseFrontmatter = {
   date: string;
   lastUpdated: string;
   category: string[];
-  tags: string[];
+  tags?: string[];
   intent: ContentIntent;
   products: Product[];
   featured?: boolean;

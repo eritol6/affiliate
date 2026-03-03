@@ -22,6 +22,7 @@ function slugifyProduct(value: string) {
 export function ComparisonTable({ products, subtag, topPickName, topPickSlug }: ComparisonTableProps) {
   const getScore = (product: Product) => product.score ?? product.rating ?? 0;
   const getCell = (value?: string) => value?.trim() || "—";
+  const useDumbbellColumns = products.length > 0 && products.every((product) => Boolean(product.weightRange || product.incrementSize || product.adjustmentSpeed));
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
@@ -29,10 +30,22 @@ export function ComparisonTable({ products, subtag, topPickName, topPickSlug }: 
         <thead className="sticky top-0 bg-slate-100 text-slate-700">
           <tr>
             <th className="px-5 py-3.5 font-semibold">Product</th>
-            <th className="px-5 py-3.5 font-semibold">Footprint</th>
-            <th className="px-5 py-3.5 font-semibold">Ceiling</th>
-            <th className="px-5 py-3.5 font-semibold">Resistance</th>
-            <th className="px-5 py-3.5 font-semibold">Max</th>
+            {useDumbbellColumns ? (
+              <>
+                <th className="px-5 py-3.5 font-semibold">Weight Range</th>
+                <th className="px-5 py-3.5 font-semibold">Increment Size</th>
+                <th className="px-5 py-3.5 font-semibold">Footprint</th>
+                <th className="px-5 py-3.5 font-semibold">Adjustment Speed</th>
+                <th className="px-5 py-3.5 font-semibold">Best For</th>
+              </>
+            ) : (
+              <>
+                <th className="px-5 py-3.5 font-semibold">Footprint</th>
+                <th className="px-5 py-3.5 font-semibold">Ceiling</th>
+                <th className="px-5 py-3.5 font-semibold">Resistance</th>
+                <th className="px-5 py-3.5 font-semibold">Max</th>
+              </>
+            )}
             <th className="px-5 py-3.5 font-semibold">Score (10-point)</th>
             <th className="px-5 py-3.5 text-right font-semibold">
               <span className="sr-only">Buy</span>
@@ -65,14 +78,26 @@ export function ComparisonTable({ products, subtag, topPickName, topPickSlug }: 
                           </span>
                         ) : null}
                       </div>
-                      {product.bestFor ? <div className="mt-1 text-xs text-slate-600">{product.bestFor}</div> : null}
+                      {!useDumbbellColumns && product.bestFor ? <div className="mt-1 text-xs text-slate-600">{product.bestFor}</div> : null}
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-3.5 text-slate-700">{getCell(product.footprint)}</td>
-                <td className="px-5 py-3.5 text-slate-700">{getCell(product.ceilingHeight)}</td>
-                <td className="px-5 py-3.5 text-slate-700">{getCell(product.resistanceType)}</td>
-                <td className="px-5 py-3.5 text-slate-700">{getCell(product.maxResistance)}</td>
+                {useDumbbellColumns ? (
+                  <>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.weightRange)}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.incrementSize)}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.footprint)}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.adjustmentSpeed)}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.bestFor)}</td>
+                  </>
+                ) : (
+                  <>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.footprint)}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.ceilingHeight)}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.resistanceType)}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{getCell(product.maxResistance)}</td>
+                  </>
+                )}
                 <td className="px-5 py-3.5 text-slate-700">{getScore(product).toFixed(1)}/10</td>
                 <td className="px-5 py-3.5 text-right">
                   <BuyButton merchant={product.merchant} url={product.url} label="Check today’s price on Amazon" subtag={subtag} />
