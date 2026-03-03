@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 
-import { Product } from "@/types/content";
+type QuickPick = {
+  name: string;
+  bestFor: string;
+  anchorId: string;
+};
 
-export function QuickPicksBox({ products }: { products: Product[] }) {
+export function QuickPicksBox({ picks }: { picks: QuickPick[] }) {
   const [open, setOpen] = useState(false);
-  const picks = products.slice(0, 4);
 
   return (
     <aside className="rounded-xl border border-neutral-200 bg-white p-4 lg:sticky lg:top-24">
@@ -21,7 +24,12 @@ export function QuickPicksBox({ products }: { products: Product[] }) {
         {picks.map((pick) => (
           <li key={pick.name} className="text-sm text-neutral-700">
             <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">{pick.bestFor}</p>
-            <p className="mt-0.5 font-medium text-slate-900">{pick.name}</p>
+            <a
+              href={`#${pick.anchorId}`}
+              className="mt-0.5 inline-block font-medium text-slate-900 underline decoration-transparent underline-offset-2 transition hover:text-blue-700 hover:decoration-blue-300"
+            >
+              {pick.name}
+            </a>
           </li>
         ))}
       </ul>

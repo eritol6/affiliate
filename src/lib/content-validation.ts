@@ -6,7 +6,7 @@ import type { BaseFrontmatter, ContentDoc, Merchant, Product } from "../types/co
 const INTENTS = new Set(["money-page", "comparison", "review"]);
 const MERCHANTS = new Set<Merchant>(["amazon", "walmart", "target", "other"]);
 const PLACEHOLDER_PATTERN = /(B0EXAMPLE|\/ip\/example|example\.com|example-|example_)/i;
-const DISALLOWED_TRACK_PARAM_PATTERN = /(?:^|[?&])(tag|ascsubtag)=/i;
+const TRACK_PARAM_PATTERN = /(?:^|[?&])(tag|ascsubtag)=/i;
 
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -27,24 +27,28 @@ function validateProduct(product: unknown, context: string, index: number) {
 
   assert(isNonEmptyString(p.name), `${prefix}.name is required.`);
   assert(MERCHANTS.has(p.merchant), `${prefix}.merchant must be one of amazon|walmart|target|other.`);
-  assert(isNonEmptyString(p.url), `${prefix}.url is required.`);
+  assert(typeof p.url === "string", `${prefix}.url must be a string.`);
   assert(isNonEmptyString(p.priceRange), `${prefix}.priceRange is required.`);
-  assert(typeof p.rating === "number", `${prefix}.rating must be a number.`);
+  assert(typeof p.score === "number" || typeof p.rating === "number", `${prefix}.score (or legacy .rating) must be a number.`);
   assert(isNonEmptyString(p.bestFor), `${prefix}.bestFor is required.`);
   assert(Array.isArray(p.pros), `${prefix}.pros must be an array.`);
   assert(Array.isArray(p.cons), `${prefix}.cons must be an array.`);
   assert(isNonEmptyString(p.image), `${prefix}.image is required.`);
 
-  try {
-    const parsed = new URL(p.url);
-    assert(parsed.protocol === "https:" || parsed.protocol === "http:", `${prefix}.url must use http/https.`);
-    assert(!DISALLOWED_TRACK_PARAM_PATTERN.test(parsed.search), `${prefix}.url must not contain tag/ascsubtag directly.`);
-    assert(!PLACEHOLDER_PATTERN.test(p.url), `${prefix}.url contains placeholder token(s).`);
-  } catch (error) {
-    if (error instanceof TypeError) {
-      throw new Error(`${prefix}.url must be a valid absolute URL.`);
+  if (p.url.trim().length > 0) {
+    try {
+      const parsed = new URL(p.url);
+      assert(parsed.protocol === "https:" || parsed.protocol === "http:", `${prefix}.url must use http/https.`);
+      if (TRACK_PARAM_PATTERN.test(parsed.search)) {
+        assert(p.merchant === "amazon", `${prefix}.url may include tracking params only for merchant=amazon.`);
+      }
+      assert(!PLACEHOLDER_PATTERN.test(p.url), `${prefix}.url contains placeholder token(s).`);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(`${prefix}.url must be a valid absolute URL.`);
+      }
+      throw error;
     }
-    throw error;
   }
 
   if (p.image.startsWith("/")) {
@@ -117,7 +121,7 @@ export function isPlaceholderUrl(url: string): boolean {
 export function hasDisallowedTrackingParams(url: string): boolean {
   try {
     const parsed = new URL(url);
-    return DISALLOWED_TRACK_PARAM_PATTERN.test(parsed.search);
+    return TRACK_PARAM_PATTERN.test(parsed.search);
   } catch {
     return false;
   }

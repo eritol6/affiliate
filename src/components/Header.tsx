@@ -21,7 +21,7 @@ export function Header({ searchIndex }: { searchIndex: SearchEntry[] }) {
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-3 px-4 py-4 sm:px-6">
         <Link href="/" className="inline-flex items-center gap-2 rounded-lg px-1 py-0.5 text-lg font-bold tracking-tight text-slate-900 transition hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60">
           <span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden />
-          Picks Ledger
+          The Buyers Reports
         </Link>
         <nav className="flex items-center gap-1 text-sm font-medium text-slate-700">
           {links.map((link) => {

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { BuyButton } from "@/components/BuyButton";
 import { Product } from "@/types/content";
 
@@ -10,22 +12,36 @@ type VerdictHeroProps = {
   topPick?: Product;
   alternates: AlternatePick[];
   subtag: string;
+  topPickBestForOverride?: string;
 };
 
-export function VerdictHero({ topPick, alternates, subtag }: VerdictHeroProps) {
+export function VerdictHero({ topPick, alternates, subtag, topPickBestForOverride }: VerdictHeroProps) {
   if (!topPick) return null;
+  const topPickScore = (topPick.score ?? topPick.rating ?? 0).toFixed(1);
 
   return (
     <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
       <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
         <div className="space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Our top pick</p>
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{topPick.name}</h2>
-            <p className="mt-2 text-sm text-slate-700">Best for: {topPick.bestFor}</p>
+          <div className="grid gap-4 sm:grid-cols-[180px_1fr] sm:items-start">
+            <Image
+              src={topPick.image}
+              alt={`${topPick.name} product image`}
+              width={500}
+              height={500}
+              className="w-full max-w-[180px] rounded-xl border border-slate-200 bg-white object-contain p-2"
+            />
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{topPick.name}</h2>
+              <p className="mt-1 text-sm font-medium text-slate-700">Score: {topPickScore}/10</p>
+              <p className="mt-2 text-sm text-slate-700">
+                Best for: {topPickBestForOverride ?? topPick.bestFor}
+              </p>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2.5">
-            {topPick.url?.trim() ? <BuyButton merchant={topPick.merchant} url={topPick.url} subtag={subtag} label="Check price" /> : null}
+            <BuyButton merchant={topPick.merchant} url={topPick.url} subtag={subtag} label="Check today’s price on Amazon" />
             <a
               href="#comparison"
               className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2"
@@ -33,9 +49,7 @@ export function VerdictHero({ topPick, alternates, subtag }: VerdictHeroProps) {
               See comparison
             </a>
           </div>
-          <p className="text-xs text-slate-500">
-            We may earn a commission from qualifying purchases. This does not change our editorial selection process.
-          </p>
+          <p className="text-xs text-slate-500">Fast shipping and easy returns available on Amazon.</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
@@ -44,12 +58,11 @@ export function VerdictHero({ topPick, alternates, subtag }: VerdictHeroProps) {
               <article key={entry.label} className="rounded-xl border border-slate-200 bg-white p-3.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{entry.label}</p>
                 <p className="mt-1 text-sm font-semibold text-slate-900">{entry.product.name}</p>
+                <p className="mt-1 text-xs font-medium text-slate-600">Score: {(entry.product.score ?? entry.product.rating ?? 0).toFixed(1)}/10</p>
                 {entry.product.priceRange ? <p className="mt-1 text-xs text-slate-600">{entry.product.priceRange}</p> : null}
-                {entry.product.url?.trim() ? (
-                  <div className="mt-3">
-                    <BuyButton merchant={entry.product.merchant} url={entry.product.url} subtag={subtag} label="Check price" />
-                  </div>
-                ) : null}
+                <div className="mt-3">
+                  <BuyButton merchant={entry.product.merchant} url={entry.product.url} subtag={subtag} label="Check price" />
+                </div>
               </article>
             ) : null,
           )}

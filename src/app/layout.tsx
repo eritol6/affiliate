@@ -13,8 +13,8 @@ const defaultOgImage = "/images/og-default.svg";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Picks Ledger | Trusted Guides, Reviews & Comparisons",
-    template: "%s | Picks Ledger",
+    default: "The Buyers Reports | Trusted Guides, Reviews & Comparisons",
+    template: "%s | The Buyers Reports",
   },
   description:
     "Independent buying guides and reviews to help you choose better products across home, tech, tools, and more.",
@@ -22,16 +22,16 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Picks Ledger",
+    title: "The Buyers Reports",
     description: "Independent buying guides and reviews.",
     type: "website",
-    siteName: "Picks Ledger",
+    siteName: "The Buyers Reports",
     url: siteUrl,
-    images: [{ url: defaultOgImage, width: 1200, height: 630, alt: "Picks Ledger" }],
+    images: [{ url: defaultOgImage, width: 1200, height: 630, alt: "The Buyers Reports" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Picks Ledger",
+    title: "The Buyers Reports",
     description: "Independent buying guides and reviews.",
     images: [defaultOgImage],
   },

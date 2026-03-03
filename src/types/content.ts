@@ -5,8 +5,13 @@ export type Product = {
   merchant: Merchant;
   url: string;
   priceRange: string;
-  rating: number;
+  score?: number;
+  rating?: number;
   bestFor: string;
+  footprint?: string;
+  ceilingHeight?: string;
+  resistanceType?: string;
+  maxResistance?: string;
   pros: string[];
   cons: string[];
   image: string;

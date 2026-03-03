@@ -4,39 +4,64 @@ import { Product } from "@/types/content";
 type ComparisonTableProps = {
   products: Product[];
   subtag?: string;
+  topPickName?: string;
+  topPickSlug?: string;
 };
 
-export function ComparisonTable({ products, subtag }: ComparisonTableProps) {
+function slugifyProduct(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+export function ComparisonTable({ products, subtag, topPickName, topPickSlug }: ComparisonTableProps) {
+  const getScore = (product: Product) => product.score ?? product.rating ?? 0;
+  const getCell = (value?: string) => value?.trim() || "—";
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
       <table className="min-w-full text-left text-sm">
         <thead className="sticky top-0 bg-slate-100 text-slate-700">
           <tr>
             <th className="px-5 py-3.5 font-semibold">Product</th>
-            <th className="px-5 py-3.5 font-semibold">Best for</th>
-            <th className="px-5 py-3.5 font-semibold">Price range</th>
-            <th className="px-5 py-3.5 font-semibold">Rating</th>
+            <th className="px-5 py-3.5 font-semibold">Footprint</th>
+            <th className="px-5 py-3.5 font-semibold">Ceiling</th>
+            <th className="px-5 py-3.5 font-semibold">Resistance</th>
+            <th className="px-5 py-3.5 font-semibold">Max</th>
+            <th className="px-5 py-3.5 font-semibold">Score (10-point)</th>
             <th className="px-5 py-3.5 text-right font-semibold">
               <span className="sr-only">Buy</span>
             </th>
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
-            <tr key={product.name} className="border-t border-slate-100">
-              <td className="px-5 py-3.5 font-medium text-slate-900">{product.name}</td>
-              <td className="px-5 py-3.5 text-slate-700">{product.bestFor}</td>
-              <td className="px-5 py-3.5 text-slate-700">{product.priceRange}</td>
-              <td className="px-5 py-3.5 text-slate-700">{product.rating.toFixed(1)}</td>
-              <td className="px-5 py-3.5 text-right">
-                {product.url?.trim() && product.merchant ? (
+          {products.map((product) => {
+            const isTopPick = topPickSlug ? slugifyProduct(product.name) === topPickSlug : topPickName ? product.name === topPickName : false;
+
+            return (
+              <tr key={product.name} className={`border-t border-slate-100 ${isTopPick ? "bg-slate-50" : ""}`}>
+                <td className={`px-5 py-3.5 font-medium text-slate-900 ${isTopPick ? "border-l-4 border-l-blue-600" : ""}`}>
+                  <span>{product.name}</span>
+                  {isTopPick ? (
+                    <span className="ml-2 inline-flex items-center rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">
+                      Top Pick
+                    </span>
+                  ) : null}
+                </td>
+                <td className="px-5 py-3.5 text-slate-700">{getCell(product.footprint)}</td>
+                <td className="px-5 py-3.5 text-slate-700">{getCell(product.ceilingHeight)}</td>
+                <td className="px-5 py-3.5 text-slate-700">{getCell(product.resistanceType)}</td>
+                <td className="px-5 py-3.5 text-slate-700">{getCell(product.maxResistance)}</td>
+                <td className="px-5 py-3.5 text-slate-700">{getScore(product).toFixed(1)}/10</td>
+                <td className="px-5 py-3.5 text-right">
                   <BuyButton merchant={product.merchant} url={product.url} label="Check price" subtag={subtag} />
-                ) : (
-                  <span className="text-xs text-slate-400">Unavailable</span>
-                )}
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

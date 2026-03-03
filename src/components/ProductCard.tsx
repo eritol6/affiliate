@@ -5,6 +5,8 @@ import { MerchantBadge } from "@/components/MerchantBadge";
 import { Product } from "@/types/content";
 
 export function ProductCard({ product, subtag }: { product: Product; subtag?: string }) {
+  const score = (product.score ?? product.rating ?? 0).toFixed(1);
+
   return (
     <article className="rounded-2xl border border-neutral-200 bg-white p-5 transition hover:border-neutral-300 hover:shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -13,6 +15,7 @@ export function ProductCard({ product, subtag }: { product: Product; subtag?: st
             Best for: {product.bestFor}
           </div>
           <h3 className="text-lg font-semibold tracking-tight text-slate-900">{product.name}</h3>
+          <p className="text-sm font-medium text-slate-600">Score: {score}/10</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-slate-500">Sold by</span>
@@ -22,10 +25,10 @@ export function ProductCard({ product, subtag }: { product: Product; subtag?: st
       <div className="mt-4 grid gap-4 md:grid-cols-[170px_1fr]">
         <Image
           src={product.image}
-          alt={product.name}
-          width={200}
-          height={200}
-          className="aspect-square w-full rounded-xl border border-neutral-200 bg-neutral-50 object-contain p-2"
+          alt={`${product.name} product image`}
+          width={500}
+          height={500}
+          className="w-full max-w-[260px] rounded-xl object-contain"
         />
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">

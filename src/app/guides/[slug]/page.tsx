@@ -95,6 +95,35 @@ function selectGuidePicks(products: Product[]) {
   };
 }
 
+function selectCompactMachinePicks(products: Product[]) {
+  const topPick = getPick(products, "overall") ?? getPick(products, "anchor") ?? products[0];
+  const rest = topPick ? products.filter((product) => product !== topPick) : [...products];
+
+  const bestValue = getPick(rest, "value") ?? getPick(rest, "budget") ?? rest[0];
+  const smartPool = rest.filter((product) => product !== bestValue);
+  const bestSmart = getPick(smartPool, "smart") ?? smartPool[0];
+  const beginnerPool = rest.filter((product) => product !== bestValue && product !== bestSmart);
+  const bestBeginner = getPick(beginnerPool, "beginner") ?? beginnerPool[0];
+
+  return {
+    topPick,
+    alternates: [
+      { label: "Best value", product: bestValue },
+      { label: "Best smart", product: bestSmart },
+      { label: "Best beginner", product: bestBeginner },
+    ],
+  };
+}
+
+function slugifyProductName(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export default async function GuidePage({ params }: Props) {
   const { slug } = await params;
   const guide = getDocBySlug("guides", slug);
@@ -105,6 +134,20 @@ export default async function GuidePage({ params }: Props) {
 
   const products = guide.frontmatter.products;
   const { bestOverall, bestBudget, bestPremium, bestCompact } = selectGuidePicks(products);
+  const isCompactMachinesGuide = guide.frontmatter.slug === "best-compact-home-gym-machines";
+  const compactHero = isCompactMachinesGuide ? selectCompactMachinePicks(products) : null;
+  const heroTopPick = compactHero?.topPick ?? bestOverall;
+  const heroAlternates =
+    compactHero?.alternates ?? [
+      { label: "Best budget", product: bestBudget },
+      { label: "Best premium", product: bestPremium },
+      { label: "Most compact", product: bestCompact },
+    ];
+  const quickPickItems = products.slice(0, 4).map((product) => ({
+    name: product.name,
+    bestFor: product.bestFor,
+    anchorId: `product-${slugifyProductName(product.name)}`,
+  }));
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -140,27 +183,47 @@ export default async function GuidePage({ params }: Props) {
       </div>
 
       <VerdictHero
-        topPick={bestOverall}
+        topPick={heroTopPick}
         subtag={guide.frontmatter.slug}
-        alternates={[
-          { label: "Best budget", product: bestBudget },
-          { label: "Best premium", product: bestPremium },
-          { label: "Most compact", product: bestCompact },
-        ]}
+        topPickBestForOverride={
+          guide.frontmatter.slug === "best-adjustable-dumbbells-small-spaces-2026"
+            ? "Most apartment lifters who want fast weight changes and compact storage."
+            : undefined
+        }
+        alternates={heroAlternates}
       />
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[250px_1fr]">
-        <QuickPicksBox products={products} />
+        <QuickPicksBox picks={quickPickItems} />
         <div className="space-y-10">
+          {isCompactMachinesGuide ? (
+            <section className="rounded-xl border border-neutral-200 bg-neutral-50 p-5">
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Space Planning Quick Guide</h2>
+              <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-neutral-700">
+                <li>Measure usable width, not just wall-to-wall.</li>
+                <li>Account for cable travel range.</li>
+                <li>Leave 6-12 inches clearance behind machine.</li>
+                <li>Verify ceiling height before purchase.</li>
+              </ul>
+            </section>
+          ) : null}
+
           <section id="comparison" className="scroll-mt-24">
             <h2 className="mb-4 border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Comparison table</h2>
-            <ComparisonTable products={products} subtag={guide.frontmatter.slug} />
+            <ComparisonTable
+              products={products}
+              subtag={guide.frontmatter.slug}
+              topPickName={heroTopPick?.name}
+              topPickSlug={isCompactMachinesGuide ? "powerline-pft100" : undefined}
+            />
           </section>
 
           <section id="top-picks" className="scroll-mt-24 space-y-4">
             <h2 className="border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Top picks</h2>
             {products.map((product) => (
-              <ProductCard key={product.name} product={product} subtag={guide.frontmatter.slug} />
+              <div key={product.name} id={`product-${slugifyProductName(product.name)}`} className="scroll-mt-24">
+                <ProductCard product={product} subtag={guide.frontmatter.slug} />
+              </div>
             ))}
           </section>
 
@@ -171,22 +234,10 @@ export default async function GuidePage({ params }: Props) {
             </div>
           </section>
 
-          <section className="border-t border-neutral-200 pt-8">
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">FAQ</h2>
-            <details className="mt-4 rounded-xl border border-neutral-200 p-4">
-              <summary className="cursor-pointer font-medium">What is the best option for apartments?</summary>
-              <p className="mt-2 text-sm text-neutral-700">Adjustable systems and foldable equipment usually win on footprint and storage convenience.</p>
-            </details>
-            <details className="mt-2 rounded-xl border border-neutral-200 p-4">
-              <summary className="cursor-pointer font-medium">How often should you update this guide?</summary>
-              <p className="mt-2 text-sm text-neutral-700">At minimum quarterly, or when major models are discontinued or repriced.</p>
-            </details>
-          </section>
-
           <section className="rounded-xl border border-neutral-200 bg-neutral-50 p-5">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Final recommendation</h2>
             <p className="mt-2 text-neutral-700">
-              If you want the safest all-around choice today, start with <strong>{bestOverall?.name}</strong>. It balances quality, space efficiency,
+              If you want the safest all-around choice today, start with <strong>{heroTopPick?.name}</strong>. It balances quality, space efficiency,
               and long-term value.
             </p>
           </section>
