@@ -8,12 +8,12 @@ type FootprintVisualProps = {
   b?: FootprintItem;
   nameA?: string;
   footprintA?: string;
-  widthA?: number;
-  depthA?: number;
+  widthA?: number | string;
+  depthA?: number | string;
   nameB?: string;
   footprintB?: string;
-  widthB?: number;
-  depthB?: number;
+  widthB?: number | string;
+  depthB?: number | string;
 };
 
 function parseFootprint(footprint: string) {
@@ -35,6 +35,17 @@ function getRectSize(item: { width: number; depth: number; area: number }, maxAr
     width: Math.max(56, (item.width / shapeMax) * maxSide),
     height: Math.max(56, (item.depth / shapeMax) * maxSide),
   };
+}
+
+function coerceNumber(value: number | string | undefined) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const match = value.match(/\d+(?:\.\d+)?/);
+    if (!match) return null;
+    const parsed = Number(match[0]);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
 }
 
 function FootprintCard({
@@ -74,10 +85,15 @@ function FootprintCard({
 }
 
 export function FootprintVisual({ a, b, nameA, footprintA, widthA, depthA, nameB, footprintB, widthB, depthB }: FootprintVisualProps) {
+  const numericWidthA = coerceNumber(widthA);
+  const numericDepthA = coerceNumber(depthA);
+  const numericWidthB = coerceNumber(widthB);
+  const numericDepthB = coerceNumber(depthB);
+
   const fromNumbersA =
-    typeof widthA === "number" && typeof depthA === "number" ? { name: nameA ?? "Item A", footprint: `${widthA}" W x ${depthA}" D` } : null;
+    numericWidthA && numericDepthA ? { name: nameA ?? "Item A", footprint: `${numericWidthA}" W x ${numericDepthA}" D` } : null;
   const fromNumbersB =
-    typeof widthB === "number" && typeof depthB === "number" ? { name: nameB ?? "Item B", footprint: `${widthB}" W x ${depthB}" D` } : null;
+    numericWidthB && numericDepthB ? { name: nameB ?? "Item B", footprint: `${numericWidthB}" W x ${numericDepthB}" D` } : null;
 
   const itemA: FootprintItem = a ?? fromNumbersA ?? { name: nameA ?? "Item A", footprint: footprintA ?? "" };
   const itemB: FootprintItem = b ?? fromNumbersB ?? { name: nameB ?? "Item B", footprint: footprintB ?? "" };
