@@ -1,7 +1,5 @@
 import type { MetadataRoute } from "next";
 
-import { getSiteUrl } from "@/lib/site";
-
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
@@ -11,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/internal", "/internal/*"],
       },
     ],
-    sitemap: `${getSiteUrl()}/sitemap.xml`,
+    sitemap: "https://thebuyersreports.com/sitemap.xml",
   };
 }
