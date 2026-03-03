@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { Suspense } from "react";
 
+import Analytics from "@/components/Analytics";
 import { SiteLayout } from "@/components/SiteLayout";
 import { getSiteUrl } from "@/lib/site";
 
@@ -51,12 +53,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-44YCT5H8P1');
+            gtag('config', 'G-44YCT5H8P1', { send_page_view: false });
           `}
         </Script>
       </head>
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <SiteLayout>{children}</SiteLayout>
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
       </body>
     </html>
   );
