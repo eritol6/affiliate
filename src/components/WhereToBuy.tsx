@@ -11,6 +11,8 @@ export function WhereToBuy({ products, subtag }: { products: Product[]; subtag?:
             key={product.name}
             merchant={product.merchant}
             url={product.url}
+            productName={product.name}
+            placement="where_to_buy"
             label={`Buy ${product.name}`}
             subtag={subtag}
           />

@@ -33,7 +33,14 @@ export default function DealsPage() {
             <h2 className="text-lg font-semibold">{deal.title}</h2>
             <p className="mt-2 text-sm text-slate-600">{deal.note}</p>
             <div className="mt-3">
-              <BuyButton merchant={deal.merchant} url={deal.url} label="View deal" subtag="deals" />
+              <BuyButton
+                merchant={deal.merchant}
+                url={deal.url}
+                productName={deal.title}
+                placement="deals_page"
+                label="View deal"
+                subtag="deals"
+              />
             </div>
           </article>
         ))}

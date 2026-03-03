@@ -41,7 +41,14 @@ export function VerdictHero({ topPick, alternates, subtag, topPickBestForOverrid
             </div>
           </div>
           <div className="flex flex-wrap gap-2.5">
-            <BuyButton merchant={topPick.merchant} url={topPick.url} subtag={subtag} label="Check today’s price on Amazon" />
+            <BuyButton
+              merchant={topPick.merchant}
+              url={topPick.url}
+              productName={topPick.name}
+              placement="hero"
+              subtag={subtag}
+              label="Check today’s price on Amazon"
+            />
             <a
               href="#comparison"
               className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2"
@@ -61,7 +68,14 @@ export function VerdictHero({ topPick, alternates, subtag, topPickBestForOverrid
                 <p className="mt-1 text-xs font-medium text-slate-600">Score: {(entry.product.score ?? entry.product.rating ?? 0).toFixed(1)}/10</p>
                 {entry.product.priceRange ? <p className="mt-1 text-xs text-slate-600">{entry.product.priceRange}</p> : null}
                 <div className="mt-3">
-                  <BuyButton merchant={entry.product.merchant} url={entry.product.url} subtag={subtag} label="Check today’s price on Amazon" />
+                  <BuyButton
+                    merchant={entry.product.merchant}
+                    url={entry.product.url}
+                    productName={entry.product.name}
+                    placement="hero_alternate"
+                    subtag={subtag}
+                    label="Check today’s price on Amazon"
+                  />
                 </div>
               </article>
             ) : null,

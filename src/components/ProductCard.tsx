@@ -59,7 +59,13 @@ export function ProductCard({ product, subtag }: { product: Product; subtag?: st
             </ul>
           ) : null}
           <div className="flex flex-wrap items-center gap-3">
-            <BuyButton merchant={product.merchant} url={product.url} subtag={subtag} />
+            <BuyButton
+              merchant={product.merchant}
+              url={product.url}
+              productName={product.name}
+              placement="top_picks_card"
+              subtag={subtag}
+            />
             <span className="text-sm font-medium text-neutral-600">Price: {product.priceRange}</span>
           </div>
         </div>
