@@ -35,7 +35,7 @@ export function ComparisonWinnerCard({
       <p className="mt-1 text-lg font-semibold text-slate-900">{productName}</p>
       <p className="mt-2 text-sm leading-6 text-slate-700">{reason}</p>
       <div className="mt-3">
-        <BuyButton merchant={merchant} url={url} label="Check today's price on Amazon" />
+        <BuyButton merchant={merchant} url={url} label="Check today’s price on Amazon" />
       </div>
     </div>
   );

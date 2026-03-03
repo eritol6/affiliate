@@ -75,7 +75,7 @@ export function ComparisonTable({ products, subtag, topPickName, topPickSlug }: 
                 <td className="px-5 py-3.5 text-slate-700">{getCell(product.maxResistance)}</td>
                 <td className="px-5 py-3.5 text-slate-700">{getScore(product).toFixed(1)}/10</td>
                 <td className="px-5 py-3.5 text-right">
-                  <BuyButton merchant={product.merchant} url={product.url} label="Check price" subtag={subtag} />
+                  <BuyButton merchant={product.merchant} url={product.url} label="Check today’s price on Amazon" subtag={subtag} />
                 </td>
               </tr>
             );

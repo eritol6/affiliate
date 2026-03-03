@@ -21,19 +21,19 @@ const env = getEnv();
 export const affiliateConfig: Record<Merchant, MerchantConfig> = {
   amazon: {
     displayName: "Amazon",
-    defaultLabel: "Check price on Amazon",
+    defaultLabel: "Check today’s price on Amazon",
     badge: "Amazon",
     buildUrl: (url, subtag) => withQueryParams(url, { tag: env.NEXT_PUBLIC_AMAZON_TAG, ascsubtag: subtag }),
   },
   walmart: {
     displayName: "Walmart",
-    defaultLabel: "Check price on Walmart",
+    defaultLabel: "Check today’s price on Walmart",
     badge: "Walmart",
     buildUrl: (url, subtag) => withQueryParams(url, { subtag: subtag ?? env.MERCHANT_WALMART_SUBTAG }),
   },
   target: {
     displayName: "Target",
-    defaultLabel: "Check price on Target",
+    defaultLabel: "Check today’s price on Target",
     badge: "Target",
     buildUrl: (url, subtag) => withQueryParams(url, { subtag: subtag ?? env.MERCHANT_TARGET_SUBTAG }),
   },

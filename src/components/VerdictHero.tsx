@@ -61,7 +61,7 @@ export function VerdictHero({ topPick, alternates, subtag, topPickBestForOverrid
                 <p className="mt-1 text-xs font-medium text-slate-600">Score: {(entry.product.score ?? entry.product.rating ?? 0).toFixed(1)}/10</p>
                 {entry.product.priceRange ? <p className="mt-1 text-xs text-slate-600">{entry.product.priceRange}</p> : null}
                 <div className="mt-3">
-                  <BuyButton merchant={entry.product.merchant} url={entry.product.url} subtag={subtag} label="Check price" />
+                  <BuyButton merchant={entry.product.merchant} url={entry.product.url} subtag={subtag} label="Check today’s price on Amazon" />
                 </div>
               </article>
             ) : null,
