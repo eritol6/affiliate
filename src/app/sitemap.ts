@@ -1,11 +1,9 @@
 import type { MetadataRoute } from "next";
 
 import { getDocsByType } from "@/lib/content";
-import { getSiteUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = getSiteUrl();
-  const baseUrl = siteUrl.startsWith("http://localhost") ? "https://thebuyersreports.com" : siteUrl;
+  const baseUrl = "https://thebuyersreports.com";
 
   const guides = getDocsByType("guides");
   const reviews = getDocsByType("reviews");
