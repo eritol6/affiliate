@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { BuyButton } from "@/components/BuyButton";
 import { Product } from "@/types/content";
 
@@ -59,27 +57,16 @@ export function ComparisonTable({ products, subtag, topPickName, topPickSlug }: 
             return (
               <tr key={product.name} className={`border-t border-slate-100 ${isTopPick ? "bg-slate-50" : ""}`}>
                 <td className={`px-5 py-3.5 ${isTopPick ? "border-l-4 border-l-blue-600" : ""}`}>
-                  <div className="flex items-center gap-3">
-                    {product.image ? (
-                      <Image
-                        src={product.image}
-                        alt={`${product.name} thumbnail`}
-                        width={72}
-                        height={72}
-                        className="h-[56px] w-[56px] rounded-md border border-slate-200 bg-white object-contain p-1"
-                      />
-                    ) : null}
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium text-slate-900">{product.name}</span>
-                        {isTopPick ? (
-                          <span className="inline-flex items-center rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">
-                            Top Pick
-                          </span>
-                        ) : null}
-                      </div>
-                      {!useDumbbellColumns && product.bestFor ? <div className="mt-1 text-xs text-slate-600">{product.bestFor}</div> : null}
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium text-slate-900">{product.name}</span>
+                      {isTopPick ? (
+                        <span className="inline-flex items-center rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">
+                          Top Pick
+                        </span>
+                      ) : null}
                     </div>
+                    {!useDumbbellColumns && product.bestFor ? <div className="mt-1 text-xs text-slate-600">{product.bestFor}</div> : null}
                   </div>
                 </td>
                 {useDumbbellColumns ? (

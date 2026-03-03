@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { BuyButton } from "@/components/BuyButton";
 import { MerchantBadge } from "@/components/MerchantBadge";
 import { Product } from "@/types/content";
@@ -22,14 +20,7 @@ export function ProductCard({ product, subtag }: { product: Product; subtag?: st
           <MerchantBadge merchant={product.merchant} />
         </div>
       </div>
-      <div className="mt-4 grid gap-4 md:grid-cols-[170px_1fr]">
-        <Image
-          src={product.image}
-          alt={`${product.name} product image`}
-          width={500}
-          height={500}
-          className="w-full max-w-[260px] rounded-xl object-contain"
-        />
+      <div className="mt-4 grid gap-4">
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>

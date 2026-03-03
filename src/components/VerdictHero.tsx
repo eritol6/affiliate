@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { BuyButton } from "@/components/BuyButton";
 import { Product } from "@/types/content";
 
@@ -24,21 +22,10 @@ export function VerdictHero({ topPick, alternates, subtag, topPickBestForOverrid
       <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
         <div className="space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Our top pick</p>
-          <div className="grid gap-4 sm:grid-cols-[180px_1fr] sm:items-start">
-            <Image
-              src={topPick.image}
-              alt={`${topPick.name} product image`}
-              width={500}
-              height={500}
-              className="w-full max-w-[180px] rounded-xl border border-slate-200 bg-white object-contain p-2"
-            />
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{topPick.name}</h2>
-              <p className="mt-1 text-sm font-medium text-slate-700">Score: {topPickScore}/10</p>
-              <p className="mt-2 text-sm text-slate-700">
-                Best for: {topPickBestForOverride ?? topPick.bestFor}
-              </p>
-            </div>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{topPick.name}</h2>
+            <p className="mt-1 text-sm font-medium text-slate-700">Score: {topPickScore}/10</p>
+            <p className="mt-2 text-sm text-slate-700">Best for: {topPickBestForOverride ?? topPick.bestFor}</p>
           </div>
           <div className="flex flex-wrap gap-2.5">
             <BuyButton
