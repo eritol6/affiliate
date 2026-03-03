@@ -66,12 +66,14 @@ export function validateFrontmatter(frontmatter: unknown, context: string): Base
   assert(isNonEmptyString(fm.date), `${context}: date is required.`);
   assert(isNonEmptyString(fm.lastUpdated), `${context}: lastUpdated is required.`);
   assert(Array.isArray(fm.category), `${context}: category must be an array.`);
-  assert(Array.isArray(fm.tags), `${context}: tags must be an array.`);
+  assert(fm.tags === undefined || Array.isArray(fm.tags), `${context}: tags must be an array when provided.`);
   assert(INTENTS.has(fm.intent), `${context}: intent must be money-page|comparison|review.`);
   assert(Array.isArray(fm.products), `${context}: products must be an array.`);
 
   assert(fm.category.length > 0, `${context}: category cannot be empty.`);
-  assert(fm.tags.length > 0, `${context}: tags cannot be empty.`);
+  if (fm.tags === undefined) {
+    fm.tags = [];
+  }
 
   validateDateString(fm.date, "date", context);
   validateDateString(fm.lastUpdated, "lastUpdated", context);

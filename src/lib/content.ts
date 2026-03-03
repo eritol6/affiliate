@@ -127,7 +127,7 @@ export function getSearchIndex(): SearchEntry[] {
     slug: doc.frontmatter.slug,
     description: doc.frontmatter.description,
     category: doc.frontmatter.category,
-    tags: doc.frontmatter.tags,
+    tags: doc.frontmatter.tags ?? [],
     date: doc.frontmatter.date,
     url: `${typeToRoute[doc.type]}/${doc.frontmatter.slug}`,
   }));

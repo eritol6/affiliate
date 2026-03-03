@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 
 import { ProductCard } from "@/components/ProductCard";
+import { RelatedContent } from "@/components/RelatedContent";
 import { WhereToBuy } from "@/components/WhereToBuy";
 import { mdxComponents } from "@/components/mdx-components";
 import { getDocBySlug, getDocsByType } from "@/lib/content";
@@ -109,6 +110,8 @@ export default async function ReviewPage({ params }: Props) {
           ))}
         </ul>
       </section>
+
+      <RelatedContent currentSlug={review.frontmatter.slug} currentTags={review.frontmatter.tags} type="reviews" />
     </article>
   );
 }

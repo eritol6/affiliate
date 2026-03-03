@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { ProductCard } from "@/components/ProductCard";
 import { QuickPicksBox } from "@/components/QuickPicksBox";
+import { RelatedContent } from "@/components/RelatedContent";
 import { VerdictHero } from "@/components/VerdictHero";
 import { mdxComponents } from "@/components/mdx-components";
 import { getDocBySlug, getDocsByType } from "@/lib/content";
@@ -311,6 +312,8 @@ export default async function GuidePage({ params }: Props) {
               ))}
             </ul>
           </section>
+
+          <RelatedContent currentSlug={guide.frontmatter.slug} currentTags={guide.frontmatter.tags} type="guides" />
         </div>
       </div>
     </article>

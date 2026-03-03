@@ -1,6 +1,3 @@
-"use client";
-
-import { trackEvent } from "@/lib/analytics";
 import { affiliateConfig, formatAffiliateUrl } from "@/lib/affiliateConfig";
 import { Merchant } from "@/types/content";
 
@@ -22,7 +19,6 @@ export function OutboundLink({ merchant, url, label, subtag, className }: Outbou
       target="_blank"
       rel="nofollow sponsored noopener noreferrer"
       className={className}
-      onClick={() => trackEvent("affiliate_click", { merchant, href })}
     >
       {text}
     </a>

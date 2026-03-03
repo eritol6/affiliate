@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { BuyButton } from "@/components/BuyButton";
 import { ComparisonWinnerCard } from "@/components/ComparisonWinnerCard";
+import { FootprintVisual } from "@/components/FootprintVisual";
 
 export const mdxComponents = {
   h2: (props: React.ComponentProps<"h2">) => <h2 className="mt-8 text-2xl font-semibold text-slate-900" {...props} />,
@@ -18,4 +19,5 @@ export const mdxComponents = {
   },
   BuyButton,
   ComparisonWinnerCard,
+  FootprintVisual,
 };
