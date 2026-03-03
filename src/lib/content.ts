@@ -121,7 +121,9 @@ export function getAllDocs() {
 }
 
 export function getSearchIndex(): SearchEntry[] {
-  return getAllDocs().map((doc) => ({
+  return getAllDocs()
+    .filter((doc) => doc.type !== "category")
+    .map((doc) => ({
     type: doc.type,
     title: doc.frontmatter.title,
     slug: doc.frontmatter.slug,
