@@ -1,29 +1,35 @@
 import type { MetadataRoute } from "next";
 
-import { getAllDocs } from "@/lib/content";
+import { getDocsByType } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
 
-const routePrefix = {
-  guides: "/guides",
-  reviews: "/reviews",
-  compare: "/compare",
-  category: "/category",
-} as const;
-
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = getSiteUrl();
-  const staticRoutes = ["", "/guides", "/reviews", "/compare", "/categories", "/about", "/privacy", "/affiliate-disclosure", "/methodology", "/deals"];
+  const siteUrl = getSiteUrl();
+  const baseUrl = siteUrl.startsWith("http://localhost") ? "https://thebuyersreports.com" : siteUrl;
 
-  const dynamicRoutes = getAllDocs().map((doc) => ({
-    url: `${baseUrl}${routePrefix[doc.type]}/${doc.frontmatter.slug}`,
-    lastModified: new Date(doc.frontmatter.lastUpdated),
+  const guides = getDocsByType("guides");
+  const reviews = getDocsByType("reviews");
+
+  const guideUrls = guides.map((guide) => ({
+    url: `${baseUrl}/guides/${guide.frontmatter.slug}`,
+    lastModified: new Date(guide.frontmatter.lastUpdated),
+  }));
+
+  const reviewUrls = reviews.map((review) => ({
+    url: `${baseUrl}/reviews/${review.frontmatter.slug}`,
+    lastModified: new Date(review.frontmatter.lastUpdated),
   }));
 
   return [
-    ...staticRoutes.map((route) => ({
-      url: `${baseUrl}${route}`,
+    {
+      url: baseUrl,
       lastModified: new Date(),
-    })),
-    ...dynamicRoutes,
+    },
+    {
+      url: `${baseUrl}/methodology`,
+      lastModified: new Date(),
+    },
+    ...guideUrls,
+    ...reviewUrls,
   ];
 }
