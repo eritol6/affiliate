@@ -27,7 +27,7 @@ export function CategoryHubClient({ guides, reviews, comparisons }: Props) {
 
     if (priceFilter === "all") return sorted;
 
-    return sorted.filter((doc) => doc.frontmatter.products.some((product) => product.priceRange.includes(priceFilter)));
+    return sorted.filter((doc) => doc.frontmatter.productData.some((product) => product.priceRange.includes(priceFilter)));
   }, [all, priceFilter, sortMode]);
 
   return (
@@ -57,7 +57,7 @@ export function CategoryHubClient({ guides, reviews, comparisons }: Props) {
         {filtered.map((doc) => (
           <Link
             key={`${doc.type}-${doc.frontmatter.slug}`}
-            href={`/${doc.type}/${doc.frontmatter.slug}`}
+            href={`/guides/${doc.frontmatter.slug}`}
             className="rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
           >
             <p className="text-xs font-semibold uppercase text-slate-500">{doc.type}</p>

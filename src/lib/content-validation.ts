@@ -1,9 +1,21 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import type { BaseFrontmatter, ContentDoc, Merchant, Product } from "../types/content.ts";
+import type { ContentDoc, Merchant, Product } from "../types/content.ts";
 
-const INTENTS = new Set(["money-page", "comparison", "review"]);
+type LegacyFrontmatter = {
+  title: string;
+  slug: string;
+  description: string;
+  date: string;
+  lastUpdated?: string;
+  category: string[];
+  tags?: string[];
+  intent?: string;
+  products: Product[];
+  ogImage?: string;
+};
+
 const MERCHANTS = new Set<Merchant>(["amazon", "walmart", "target", "other"]);
 const PLACEHOLDER_PATTERN = /(B0EXAMPLE|\/ip\/example|example\.com|example-|example_)/i;
 const TRACK_PARAM_PATTERN = /(?:^|[?&])(tag|ascsubtag)=/i;
@@ -57,26 +69,23 @@ function validateProduct(product: unknown, context: string, index: number) {
   }
 }
 
-export function validateFrontmatter(frontmatter: unknown, context: string): BaseFrontmatter {
-  const fm = frontmatter as BaseFrontmatter;
+export function validateFrontmatter(frontmatter: unknown, context: string): LegacyFrontmatter {
+  const fm = frontmatter as LegacyFrontmatter;
 
   assert(isNonEmptyString(fm.title), `${context}: title is required.`);
   assert(isNonEmptyString(fm.slug), `${context}: slug is required.`);
   assert(isNonEmptyString(fm.description), `${context}: description is required.`);
   assert(isNonEmptyString(fm.date), `${context}: date is required.`);
-  assert(isNonEmptyString(fm.lastUpdated), `${context}: lastUpdated is required.`);
   assert(Array.isArray(fm.category), `${context}: category must be an array.`);
   assert(fm.tags === undefined || Array.isArray(fm.tags), `${context}: tags must be an array when provided.`);
-  assert(INTENTS.has(fm.intent), `${context}: intent must be money-page|comparison|review.`);
   assert(Array.isArray(fm.products), `${context}: products must be an array.`);
 
   assert(fm.category.length > 0, `${context}: category cannot be empty.`);
-  if (fm.tags === undefined) {
-    fm.tags = [];
-  }
 
   validateDateString(fm.date, "date", context);
-  validateDateString(fm.lastUpdated, "lastUpdated", context);
+  if (fm.lastUpdated) {
+    validateDateString(fm.lastUpdated, "lastUpdated", context);
+  }
 
   fm.products.forEach((product, index) => validateProduct(product, context, index));
 

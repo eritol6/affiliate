@@ -21,9 +21,33 @@ export type Product = {
   specs?: string[];
 };
 
-export type ContentIntent = "money-page" | "comparison" | "review";
+export type ContentKind = "guide" | "comparison" | "review";
+export type LegacyContentIntent = "money-page" | "comparison" | "review";
+export type RouteContentType = "guides" | "reviews" | "compare" | "category";
 
 export type BaseFrontmatter = {
+  title: string;
+  description: string;
+  date: string;
+  category: string;
+  affiliateDisclosure: boolean;
+  products: string[];
+  type: ContentKind;
+  slug?: string;
+  lastUpdated?: string;
+  tags?: string[];
+};
+
+export type ParsedFrontmatter = BaseFrontmatter & {
+  slug: string;
+  lastUpdated?: string;
+  tags: string[];
+  category: string;
+  productData: Product[];
+  products: string[];
+};
+
+export type LegacyFrontmatter = {
   title: string;
   slug: string;
   description: string;
@@ -31,28 +55,29 @@ export type BaseFrontmatter = {
   lastUpdated: string;
   category: string[];
   tags?: string[];
-  intent: ContentIntent;
+  intent: LegacyContentIntent;
   products: Product[];
+  type?: ContentKind;
+  affiliateDisclosure?: boolean;
   featured?: boolean;
   popularScore?: number;
   sources?: string[];
   ogImage?: string;
 };
 
-export type ContentType = "guides" | "reviews" | "compare" | "category";
-
 export type ContentDoc = {
-  type: ContentType;
-  frontmatter: BaseFrontmatter;
+  type: ContentKind;
+  frontmatter: ParsedFrontmatter &
+    Pick<LegacyFrontmatter, "featured" | "popularScore" | "sources" | "ogImage">;
   body: string;
 };
 
 export type SearchEntry = {
-  type: ContentType;
+  type: ContentKind;
   title: string;
   slug: string;
   description: string;
-  category: string[];
+  category: string;
   tags: string[];
   date: string;
   url: string;

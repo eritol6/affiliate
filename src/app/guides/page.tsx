@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getDocsByType } from "@/lib/content";
+import { getGuides } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Guides",
   alternates: { canonical: "/guides" },
 };
 
-function toTimestamp(value: string) {
+function toTimestamp(value?: string) {
+  if (!value) return 0;
   const timestamp = Date.parse(value);
   return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
 export default function GuidesIndexPage() {
-  const guides = [...getDocsByType("guides")].sort(
-    (a, b) => toTimestamp(b.frontmatter.lastUpdated) - toTimestamp(a.frontmatter.lastUpdated),
+  const guides = [...getGuides()].sort(
+    (a, b) =>
+      toTimestamp(b.frontmatter.lastUpdated ?? b.frontmatter.date) - toTimestamp(a.frontmatter.lastUpdated ?? a.frontmatter.date),
   );
 
   return (

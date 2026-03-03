@@ -22,7 +22,7 @@ export function SearchBar({ items }: Props) {
           item.title.toLowerCase().includes(needle) ||
           item.description.toLowerCase().includes(needle) ||
           item.tags.some((tag) => tag.toLowerCase().includes(needle)) ||
-          item.category.some((cat) => cat.toLowerCase().includes(needle))
+          item.category.toLowerCase().includes(needle)
         );
       })
       .slice(0, 6);

@@ -3,10 +3,9 @@ import Link from "next/link";
 import { ContentDoc } from "@/types/content";
 
 const routeMap = {
-  guides: "/guides",
-  reviews: "/reviews",
-  compare: "/compare",
-  category: "/category",
+  guide: "/guides",
+  review: "/guides",
+  comparison: "/guides",
 } as const;
 
 export function CardGrid({ items }: { items: ContentDoc[] }) {

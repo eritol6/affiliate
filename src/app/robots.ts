@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/internal", "/internal/*"],
       },
     ],
-    sitemap: "https://thebuyersreports.com/sitemap.xml",
+    sitemap: "https://www.thebuyersreports.com/sitemap.xml",
   };
 }

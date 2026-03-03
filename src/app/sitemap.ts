@@ -1,21 +1,14 @@
 import type { MetadataRoute } from "next";
 
-import { getDocsByType } from "@/lib/content";
+import { getAllDocs } from "@/lib/content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://thebuyersreports.com";
+  const baseUrl = "https://www.thebuyersreports.com";
+  const docs = getAllDocs();
 
-  const guides = getDocsByType("guides");
-  const reviews = getDocsByType("reviews");
-
-  const guideUrls = guides.map((guide) => ({
-    url: `${baseUrl}/guides/${guide.frontmatter.slug}`,
-    lastModified: new Date(guide.frontmatter.lastUpdated),
-  }));
-
-  const reviewUrls = reviews.map((review) => ({
-    url: `${baseUrl}/reviews/${review.frontmatter.slug}`,
-    lastModified: new Date(review.frontmatter.lastUpdated),
+  const guideUrls = docs.map((doc) => ({
+    url: `${baseUrl}/guides/${doc.frontmatter.slug}`,
+    lastModified: new Date(doc.frontmatter.lastUpdated ?? doc.frontmatter.date ?? new Date().toISOString()),
   }));
 
   return [
@@ -27,7 +20,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/methodology`,
       lastModified: new Date(),
     },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+    },
     ...guideUrls,
-    ...reviewUrls,
   ];
 }

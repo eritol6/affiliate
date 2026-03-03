@@ -8,15 +8,16 @@ import { ProductCard } from "@/components/ProductCard";
 import { QuickPicksBox } from "@/components/QuickPicksBox";
 import { RelatedContent } from "@/components/RelatedContent";
 import { VerdictHero } from "@/components/VerdictHero";
+import { WhereToBuy } from "@/components/WhereToBuy";
 import { mdxComponents } from "@/components/mdx-components";
-import { getDocBySlug, getDocsByType } from "@/lib/content";
+import { getAllDocs, getContentBySlug } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
-import { Product } from "@/types/content";
+import type { ContentDoc, Product } from "@/types/content";
 
 const defaultOgImage = "/images/og-default.svg";
 
 export async function generateStaticParams() {
-  return getDocsByType("guides").map((guide) => ({ slug: guide.frontmatter.slug }));
+  return getAllDocs().map((doc) => ({ slug: doc.frontmatter.slug }));
 }
 
 type Props = {
@@ -25,27 +26,27 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const guide = getDocBySlug("guides", slug);
-  if (!guide) return {};
+  const doc = getContentBySlug(slug);
+  if (!doc) return {};
 
-  const canonical = `/guides/${guide.frontmatter.slug}`;
-  const ogImage = guide.frontmatter.ogImage ?? defaultOgImage;
+  const canonical = `/guides/${doc.frontmatter.slug}`;
+  const ogImage = doc.frontmatter.ogImage ?? defaultOgImage;
 
   return {
-    title: guide.frontmatter.title,
-    description: guide.frontmatter.description,
+    title: doc.frontmatter.title,
+    description: doc.frontmatter.description,
     alternates: { canonical },
     openGraph: {
-      title: guide.frontmatter.title,
-      description: guide.frontmatter.description,
+      title: doc.frontmatter.title,
+      description: doc.frontmatter.description,
       type: "article",
       url: `${getSiteUrl()}${canonical}`,
       images: [{ url: ogImage }],
     },
     twitter: {
       card: "summary_large_image",
-      title: guide.frontmatter.title,
-      description: guide.frontmatter.description,
+      title: doc.frontmatter.title,
+      description: doc.frontmatter.description,
       images: [ogImage],
     },
   };
@@ -125,17 +126,26 @@ function slugifyProductName(value: string) {
     .replace(/-+/g, "-");
 }
 
-export default async function GuidePage({ params }: Props) {
-  const { slug } = await params;
-  const guide = getDocBySlug("guides", slug);
-
-  if (!guide) {
-    notFound();
+function renderAffiliateDisclosure(doc: ContentDoc) {
+  if (!doc.frontmatter.affiliateDisclosure) {
+    return null;
   }
 
-  const products = guide.frontmatter.products;
+  return (
+    <section className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+      <h2 className="text-sm font-semibold text-slate-900">Affiliate Disclosure</h2>
+      <p className="mt-1 text-sm text-neutral-700">
+        The Buyers Reports participates in affiliate programs. When you click partner links and buy, we may earn a
+        commission at no extra cost to you.
+      </p>
+      <p className="mt-1 text-xs text-neutral-600">All affiliate links include disclosure-friendly attributes such as nofollow and sponsored.</p>
+    </section>
+  );
+}
+
+function GuideTemplate({ doc, products }: { doc: ContentDoc; products: Product[] }) {
   const { bestOverall, bestBudget, bestPremium, bestCompact } = selectGuidePicks(products);
-  const isCompactMachinesGuide = guide.frontmatter.slug === "best-compact-home-gym-machines";
+  const isCompactMachinesGuide = doc.frontmatter.slug === "best-compact-home-gym-machines";
   const compactHero = isCompactMachinesGuide ? selectCompactMachinePicks(products) : null;
   const heroTopPick = compactHero?.topPick ?? bestOverall;
   const heroAlternates =
@@ -183,10 +193,10 @@ export default async function GuidePage({ params }: Props) {
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: guide.frontmatter.title,
-    description: guide.frontmatter.description,
-    datePublished: guide.frontmatter.date,
-    dateModified: guide.frontmatter.lastUpdated,
+    headline: doc.frontmatter.title,
+    description: doc.frontmatter.description,
+    datePublished: doc.frontmatter.date,
+    dateModified: doc.frontmatter.lastUpdated ?? doc.frontmatter.date,
   };
 
   const itemListSchema = {
@@ -200,29 +210,31 @@ export default async function GuidePage({ params }: Props) {
   };
 
   return (
-    <article>
+    <>
       <Script id="guide-article-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <Script id="guide-itemlist-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
 
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Buying guide</p>
-      <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">{guide.frontmatter.title}</h1>
-      <p className="mt-3 max-w-3xl text-base leading-7 text-neutral-700 sm:text-lg">{guide.frontmatter.description}</p>
+      <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">{doc.frontmatter.title}</h1>
+      <p className="mt-3 max-w-3xl text-base leading-7 text-neutral-700 sm:text-lg">{doc.frontmatter.description}</p>
 
       <div className="mt-5 flex flex-wrap gap-3 text-xs text-neutral-500">
-        <span>Published: {guide.frontmatter.date}</span>
-        <span>Last updated: {guide.frontmatter.lastUpdated}</span>
+        <span>Published: {doc.frontmatter.date}</span>
+        <span>Last updated: {doc.frontmatter.lastUpdated ?? doc.frontmatter.date}</span>
       </div>
 
       <VerdictHero
         topPick={heroTopPick}
-        subtag={guide.frontmatter.slug}
+        subtag={doc.frontmatter.slug}
         topPickBestForOverride={
-          guide.frontmatter.slug === "best-adjustable-dumbbells-small-spaces-2026"
+          doc.frontmatter.slug === "best-adjustable-dumbbells-small-spaces-2026"
             ? "Most apartment lifters who want fast weight changes and compact storage."
             : undefined
         }
         alternates={heroAlternates}
       />
+
+      {renderAffiliateDisclosure(doc)}
 
       <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
         <h2 className="text-xl font-semibold tracking-tight text-slate-900">Why Trust This Guide</h2>
@@ -274,7 +286,7 @@ export default async function GuidePage({ params }: Props) {
             <h2 className="mb-4 border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Comparison table</h2>
             <ComparisonTable
               products={products}
-              subtag={guide.frontmatter.slug}
+              subtag={doc.frontmatter.slug}
               topPickName={heroTopPick?.name}
               topPickSlug={isCompactMachinesGuide ? "powerline-pft100" : undefined}
             />
@@ -284,7 +296,7 @@ export default async function GuidePage({ params }: Props) {
             <h2 className="border-t border-neutral-200 pt-8 text-2xl font-semibold tracking-tight text-slate-900">Top picks</h2>
             {products.map((product) => (
               <div key={product.name} id={`product-${slugifyProductName(product.name)}`} className="scroll-mt-24">
-                <ProductCard product={product} subtag={guide.frontmatter.slug} />
+                <ProductCard product={product} subtag={doc.frontmatter.slug} />
               </div>
             ))}
           </section>
@@ -292,7 +304,7 @@ export default async function GuidePage({ params }: Props) {
           <section id="how-to-choose" className="scroll-mt-24 border-t border-neutral-200 pt-8">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">How to choose</h2>
             <div className="prose mt-3 max-w-none">
-              <MDXRemote source={guide.body} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
+              <MDXRemote source={doc.body} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
             </div>
           </section>
 
@@ -307,15 +319,136 @@ export default async function GuidePage({ params }: Props) {
           <section className="border-t border-neutral-200 pt-8">
             <h3 className="text-lg font-semibold tracking-tight text-slate-900">Sources</h3>
             <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700">
-              {(guide.frontmatter.sources ?? ["Brand specification pages", "Retail listing data", "User feedback summaries"]).map((source) => (
+              {(doc.frontmatter.sources ?? ["Brand specification pages", "Retail listing data", "User feedback summaries"]).map((source) => (
                 <li key={source}>{source}</li>
               ))}
             </ul>
           </section>
 
-          <RelatedContent currentSlug={guide.frontmatter.slug} currentTags={guide.frontmatter.tags} type="guides" />
+          <RelatedContent currentSlug={doc.frontmatter.slug} currentTags={doc.frontmatter.tags} type="guides" />
         </div>
       </div>
+    </>
+  );
+}
+
+function ReviewTemplate({ doc, products }: { doc: ContentDoc; products: Product[] }) {
+  const mainProduct = products[0];
+  const alternatives = products.slice(1, 3);
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: doc.frontmatter.title,
+    description: doc.frontmatter.description,
+    datePublished: doc.frontmatter.date,
+    dateModified: doc.frontmatter.lastUpdated ?? doc.frontmatter.date,
+  };
+
+  return (
+    <article className="space-y-6">
+      <Script id="review-article-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+
+      <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Review</p>
+      <h1 className="text-4xl font-bold tracking-tight">{doc.frontmatter.title}</h1>
+      <p className="text-lg text-slate-600">{doc.frontmatter.description}</p>
+      <p className="text-sm text-slate-500">Last updated: {doc.frontmatter.lastUpdated ?? doc.frontmatter.date}</p>
+
+      {renderAffiliateDisclosure(doc)}
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <h2 className="text-2xl font-semibold">Overview</h2>
+        <div className="prose mt-2 max-w-none">
+          <MDXRemote source={doc.body} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
+        </div>
+      </section>
+
+      {mainProduct ? <ProductCard product={mainProduct} subtag={doc.frontmatter.slug} /> : null}
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <h2 className="text-2xl font-semibold">Who this is for</h2>
+        <p className="mt-2 text-slate-600">Best for users prioritizing {mainProduct?.bestFor ?? "space-efficient training"}.</p>
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <h2 className="text-2xl font-semibold">Alternatives</h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {alternatives.map((alternative) => (
+            <ProductCard key={alternative.name} product={alternative} subtag={doc.frontmatter.slug} />
+          ))}
+        </div>
+      </section>
+
+      <WhereToBuy products={products.slice(0, 3)} subtag={doc.frontmatter.slug} />
+
+      <section>
+        <h3 className="text-lg font-semibold">Sources</h3>
+        <ul className="mt-2 list-disc pl-5 text-sm text-slate-600">
+          {(doc.frontmatter.sources ?? ["Manufacturer specs", "Retailer listings", "User reviews summary"]).map((source) => (
+            <li key={source}>{source}</li>
+          ))}
+        </ul>
+      </section>
+
+      <RelatedContent currentSlug={doc.frontmatter.slug} currentTags={doc.frontmatter.tags} type="reviews" />
     </article>
   );
+}
+
+function ComparisonTemplate({ doc, products }: { doc: ContentDoc; products: Product[] }) {
+  const marker = "<!--COMPARISON_TABLE-->";
+  const hasMarker = doc.body.includes(marker);
+  const [beforeTableContent, afterTableContent] = hasMarker ? doc.body.split(marker) : ["", doc.body];
+  const topPick = [...products].sort((a, b) => (b.score ?? b.rating ?? 0) - (a.score ?? a.rating ?? 0))[0];
+
+  return (
+    <article className="space-y-6">
+      <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Comparison</p>
+      <h1 className="text-4xl font-bold tracking-tight">{doc.frontmatter.title}</h1>
+      <p className="text-lg text-slate-600">{doc.frontmatter.description}</p>
+
+      {renderAffiliateDisclosure(doc)}
+
+      {hasMarker ? (
+        <div className="prose max-w-none rounded-2xl border border-slate-200 bg-white p-5">
+          <MDXRemote source={beforeTableContent} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
+        </div>
+      ) : null}
+
+      <ComparisonTable products={products} subtag={doc.frontmatter.slug} topPickName={topPick?.name} />
+
+      <div className="prose max-w-none rounded-2xl border border-slate-200 bg-white p-5">
+        <MDXRemote source={afterTableContent} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
+      </div>
+
+      <section className="space-y-4">
+        {products.map((product) => (
+          <ProductCard key={product.name} product={product} subtag={doc.frontmatter.slug} />
+        ))}
+      </section>
+
+      <RelatedContent currentSlug={doc.frontmatter.slug} currentTags={doc.frontmatter.tags} type="guides" />
+    </article>
+  );
+}
+
+export default async function GuidePage({ params }: Props) {
+  const { slug } = await params;
+  const doc = getContentBySlug(slug);
+
+  if (!doc) {
+    notFound();
+  }
+
+  const products = doc.frontmatter.productData;
+
+  if (doc.type === "review") {
+    return <ReviewTemplate doc={doc} products={products} />;
+  }
+
+  if (doc.type === "comparison") {
+    return <ComparisonTemplate doc={doc} products={products} />;
+  }
+
+  return <GuideTemplate doc={doc} products={products} />;
 }

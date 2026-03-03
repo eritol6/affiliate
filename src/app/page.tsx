@@ -1,40 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { getComparisons, getGuides, getReviews } from "@/lib/content";
+
 export const metadata: Metadata = {
   title: "Home",
   alternates: { canonical: "/" },
 };
 
-const featuredReports = [
-  {
-    title: "Best Compact Home Gym Machines",
-    description: "Ranked picks for serious training capability in compact footprints.",
-    href: "/guides/best-compact-home-gym-machines",
-  },
-  {
-    title: "Best Adjustable Dumbbells for Small Spaces",
-    description: "Top adjustable dumbbell options for apartment and compact home gym use.",
-    href: "/guides/best-adjustable-dumbbells-small-spaces-2026",
-  },
-  {
-    title: "Best Home Gym Under 50 Square Feet",
-    description: "Practical setup recommendations for high-efficiency training zones.",
-    href: "/guides/best-home-gym-under-50-square-feet",
-  },
-  {
-    title: "Best Quiet Home Gym Equipment for Apartments",
-    description: "Low-noise equipment choices for apartment-friendly strength training.",
-    href: "/guides/best-quiet-home-gym-equipment-apartments",
-  },
-];
-
-const popularComparisons = [
-  { title: "Mikolo K6 vs Powerline PFT100", href: "/compare/mikolo-k6-vs-powerline-pft100" },
-  { title: "Bowflex 552 vs PowerBlock", href: "/guides/bowflex-552-vs-powerblock" },
-];
+function toTimestamp(value?: string) {
+  if (!value) return 0;
+  const timestamp = Date.parse(value);
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
 
 export default function HomePage() {
+  const guides = getGuides();
+  const comparisons = getComparisons();
+  const reviews = getReviews();
+
+  const featuredReports = guides
+    .filter((guide) => guide.frontmatter.tags.includes("featured"))
+    .slice(0, 4);
+
+  const fallbackFeatured = [...guides]
+    .sort((a, b) => toTimestamp(b.frontmatter.lastUpdated ?? b.frontmatter.date) - toTimestamp(a.frontmatter.lastUpdated ?? a.frontmatter.date))
+    .slice(0, 4);
+
+  const popularComparisons = [...comparisons]
+    .sort((a, b) => toTimestamp(b.frontmatter.lastUpdated ?? b.frontmatter.date) - toTimestamp(a.frontmatter.lastUpdated ?? a.frontmatter.date))
+    .slice(0, 2);
+
+  const latestReviews = [...reviews]
+    .sort((a, b) => toTimestamp(b.frontmatter.lastUpdated ?? b.frontmatter.date) - toTimestamp(a.frontmatter.lastUpdated ?? a.frontmatter.date))
+    .slice(0, 3);
+
+  const displayedReports = featuredReports.length > 0 ? featuredReports : fallbackFeatured;
+
   return (
     <div className="space-y-12 pb-6 sm:space-y-14">
       <section className="rounded-2xl border border-neutral-200 bg-white px-5 py-9 sm:px-8 sm:py-11">
@@ -64,10 +66,10 @@ export default function HomePage() {
       <section>
         <h2 className="mb-5 text-3xl font-semibold tracking-tight text-slate-900">Featured Reports</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {featuredReports.map((report) => (
-            <Link key={report.href} href={report.href} className="rounded-xl border border-slate-200 p-5 transition hover:bg-slate-50">
-              <h3 className="text-lg font-semibold tracking-tight text-slate-900">{report.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{report.description}</p>
+          {displayedReports.map((report) => (
+            <Link key={report.frontmatter.slug} href={`/guides/${report.frontmatter.slug}`} className="rounded-xl border border-slate-200 p-5 transition hover:bg-slate-50">
+              <h3 className="text-lg font-semibold tracking-tight text-slate-900">{report.frontmatter.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{report.frontmatter.description}</p>
             </Link>
           ))}
         </div>
@@ -93,14 +95,28 @@ export default function HomePage() {
         <h2 className="mb-4 text-3xl font-semibold tracking-tight text-slate-900">Popular Comparisons</h2>
         <ul className="space-y-2">
           {popularComparisons.map((comparison) => (
-            <li key={comparison.href}>
-              <Link href={comparison.href} className="text-base font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 transition hover:text-blue-700 hover:decoration-blue-300">
-                {comparison.title}
+            <li key={comparison.frontmatter.slug}>
+              <Link href={`/guides/${comparison.frontmatter.slug}`} className="text-base font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 transition hover:text-blue-700 hover:decoration-blue-300">
+                {comparison.frontmatter.title}
               </Link>
             </li>
           ))}
         </ul>
       </section>
+
+      {latestReviews.length > 0 ? (
+        <section>
+          <h2 className="mb-4 text-3xl font-semibold tracking-tight text-slate-900">Latest Reviews</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {latestReviews.map((review) => (
+              <Link key={review.frontmatter.slug} href={`/guides/${review.frontmatter.slug}`} className="rounded-xl border border-slate-200 p-5 transition hover:bg-slate-50">
+                <h3 className="text-base font-semibold tracking-tight text-slate-900">{review.frontmatter.title}</h3>
+                <p className="mt-2 text-sm text-slate-600">{review.frontmatter.description}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

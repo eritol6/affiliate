@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { getDocsByType } from "@/lib/content";
+import { getGuides, getReviews } from "@/lib/content";
+import type { ContentDoc } from "@/types/content";
 
 type Props = {
   currentSlug: string;
@@ -13,7 +14,8 @@ function normalizeTag(tag: string) {
 }
 
 export function RelatedContent({ currentSlug, currentTags, type }: Props) {
-  const docs = getDocsByType(type).filter((doc) => doc.frontmatter.slug !== currentSlug);
+  const sourceDocs: ContentDoc[] = type === "reviews" ? getReviews() : getGuides();
+  const docs = sourceDocs.filter((doc) => doc.frontmatter.slug !== currentSlug);
   const normalizedCurrentTags = new Set((currentTags ?? []).map(normalizeTag));
 
   const tagMatches =
@@ -34,7 +36,7 @@ export function RelatedContent({ currentSlug, currentTags, type }: Props) {
         {relatedItems.map((item) => (
           <Link
             key={item.frontmatter.slug}
-            href={`/${type}/${item.frontmatter.slug}`}
+            href={`/guides/${item.frontmatter.slug}`}
             className="rounded-xl border border-slate-200 p-4 transition hover:bg-slate-50"
           >
             <p className="text-sm font-semibold text-slate-900">{item.frontmatter.title}</p>
