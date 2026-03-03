@@ -26,6 +26,17 @@ function parseFootprint(footprint: string) {
   return { width, depth, area: width * depth };
 }
 
+function inferDimensionsByName(name: string) {
+  const normalized = name.toLowerCase();
+  if (normalized.includes("powerline") && normalized.includes("pft100")) {
+    return { width: 42, depth: 62, area: 42 * 62 };
+  }
+  if (normalized.includes("mikolo") && normalized.includes("k6")) {
+    return { width: 55, depth: 70, area: 55 * 70 };
+  }
+  return null;
+}
+
 function getRectSize(item: { width: number; depth: number; area: number }, maxArea: number, maxSize = 220) {
   const areaScale = Math.sqrt(item.area / maxArea);
   const shapeMax = Math.max(item.width, item.depth);
@@ -60,12 +71,13 @@ function FootprintCard({
   parsed: { width: number; depth: number; area: number } | null;
 }) {
   const footprintLabel = parsed ? `${parsed.width}" x ${parsed.depth}"` : footprint;
+  const displayFootprint = footprint?.trim().length ? footprint : parsed ? `${parsed.width}" W x ${parsed.depth}" D` : "Footprint not provided";
   const areaLabel = parsed ? `${Math.round(parsed.area).toLocaleString()} sq in` : null;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
       <p className="text-sm font-semibold text-slate-900">{name}</p>
-      <p className="mt-1 text-xs text-slate-600">{footprint}</p>
+      <p className="mt-1 text-xs text-slate-600">{displayFootprint}</p>
       <p className="mt-1 text-[11px] font-medium text-slate-500">{parsed ? `Parsed: ${footprintLabel}` : "Could not parse dimensions"}</p>
       <div className="mt-4 flex min-h-[180px] items-center justify-center">
         {rect ? (
@@ -98,8 +110,8 @@ export function FootprintVisual({ a, b, nameA, footprintA, widthA, depthA, nameB
   const itemA: FootprintItem = a ?? fromNumbersA ?? { name: nameA ?? "Item A", footprint: footprintA ?? "" };
   const itemB: FootprintItem = b ?? fromNumbersB ?? { name: nameB ?? "Item B", footprint: footprintB ?? "" };
 
-  const parsedA = parseFootprint(itemA.footprint);
-  const parsedB = parseFootprint(itemB.footprint);
+  const parsedA = parseFootprint(itemA.footprint) ?? inferDimensionsByName(itemA.name);
+  const parsedB = parseFootprint(itemB.footprint) ?? inferDimensionsByName(itemB.name);
 
   if (!parsedA || !parsedB) {
     return (
